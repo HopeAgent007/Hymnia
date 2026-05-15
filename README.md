@@ -1,10 +1,13 @@
 # Hymnia
 
-A modern, cross-platform desktop application for displaying hymns in church services, built for the Romanian Seventh Day Adventist Church.
+Hymnia is a fork of the [SDAHymns](https://github.com/ThorSPB/SDAHymns) hymn display application, 
+extended with additional features and an improved user experience.
 
 ## Overview
-
-Hymnia is a complete rewrite of a legacy hymn display application, designed to improve user experience, support streaming workflows, and enable automation. The application displays hymns on projectors and supports customizable styling for OBS/streaming integration.
+Hymnia is a hymn display application for live worship services, built for operators who 
+need reliable, fast control over what appears on the projector. It features a remote 
+control interface with numpad input, quick-slots, and real-time hymn preview, paired with 
+a full-screen display window optimized for congregations and OBS/streaming setups.
 
 ## Features
 
