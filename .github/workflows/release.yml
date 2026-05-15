@@ -171,14 +171,12 @@ jobs:
                 echo "" >> release_body.md
                 echo "| Platform                  | Download                                                                         | Type                    |" >> release_body.md
                 echo "| :--- | :----------------- | :----------------------------------------------------------------------------------------------------------|" >> release_body.md
-                echo "| **Windows**               | [**Download Installer (Recommended)**]($BASE_URL/Hymnia-Windows-Setup.exe)             | Auto-updating Installer |" >> release_body.md
-                echo "| **Windows**               | [Portable Zip]($BASE_URL/Hymnia-v$VERSION-windows-x64.zip)                     | Manual                  |" >> release_body.md
-                echo "| **macOS (Apple Silicon)** | [**Download Installer (Recommended)**]($BASE_URL/Hymnia-Setup-arm64.pkg)       | Auto-updating Installer |" >> release_body.md
-                echo "| **macOS (Apple Silicon)** | [Portable Zip]($BASE_URL/Hymnia-v$VERSION-macos-arm64.zip)                     | Manual                  |" >> release_body.md
-                echo "| **macOS (Intel)**         | [**Download Installer (Recommended)**]($BASE_URL/Hymnia-Setup-x64.pkg)         | Auto-updating Installer |" >> release_body.md
-                echo "| **macOS (Intel)**         | [Portable Zip]($BASE_URL/Hymnia-v$VERSION-macos-x64.zip)                       | Manual                  |" >> release_body.md
-                echo "| **Linux**                 | [**Download AppImage  (Recommended)**]($BASE_URL/Hymnia-x64.AppImage)          | Auto-updating Installer |" >> release_body.md
-                echo "| **Linux**                 | [Portable Tarball]($BASE_URL/Hymnia-v$VERSION-linux-x64.tar.gz)                | Manual                  |" >> release_body.md
+                echo "| **Windows (x64)**          | [**Download Installer**]($BASE_URL/Hymnia-Windows-x64-Setup.exe)                     | Auto-updating Installer |" >> release_body.md
+                echo "| **Windows (ARM64)**        | [**Download Installer**]($BASE_URL/Hymnia-Windows-arm64-Setup.exe)                   | Auto-updating Installer |" >> release_body.md
+                echo "| **Windows**               | [Portable Zip (x64)]($BASE_URL/Hymnia-v$VERSION-windows-x64.zip)                     | Manual                  |" >> release_body.md
+                echo "| **Linux (x64)**           | [**Download AppImage**]($BASE_URL/Hymnia-x64.AppImage)                              | Auto-updating Installer |" >> release_body.md
+                echo "| **Linux (ARM64)**         | [**Download AppImage**]($BASE_URL/Hymnia-arm64.AppImage)                            | Auto-updating Installer |" >> release_body.md
+                echo "| **Linux**                 | [Portable Tarball (x64)]($BASE_URL/Hymnia-v$VERSION-linux-x64.tar.gz)                | Manual                  |" >> release_body.md
                 echo "" >> release_body.md
                 echo "---" >> release_body.md
                 echo "### 📝 What's New" >> release_body.md
@@ -225,27 +223,62 @@ jobs:
             -p:Version=${{ needs.create-release.outputs.version }} `
             -o ./publish/win-x64
 
-      - name: Copy Resources to publish folder
+      - name: Build Windows ARM64
+        run: |
+          dotnet publish ${{ env.PROJECT_PATH }} `
+            -c Release `
+            -r win-arm64 `
+            --self-contained true `
+            -p:PublishSingleFile=true `
+            -p:IncludeNativeLibrariesForSelfExtract=true `
+            -p:Version=${{ needs.create-release.outputs.version }} `
+            -o ./publish/win-arm64
+
+      - name: Copy Resources to publish folders
         run: |
           New-Item -ItemType Directory -Force -Path ./publish/win-x64/Resources
           Copy-Item -Path ./Resources/hymns.db -Destination ./publish/win-x64/Resources/ -Force
+          New-Item -ItemType Directory -Force -Path ./publish/win-arm64/Resources
+          Copy-Item -Path ./Resources/hymns.db -Destination ./publish/win-arm64/Resources/ -Force
 
       - name: Install Velopack
         run: dotnet tool install -g vpk
 
-      - name: Create Velopack Release
+      - name: Create Velopack Release (x64)
         run: |
           vpk pack --packId ${{ env.APP_NAME }} `
             --packVersion ${{ needs.create-release.outputs.version }} `
             --packDir ./publish/win-x64 `
             --mainExe Hymnia.Desktop.exe `
-            --outputDir ./Releases
+            --outputDir ./Releases/win-x64
 
-      - name: Upload Velopack RELEASES file
+      - name: Create Velopack Release (ARM64)
+        run: |
+          vpk pack --packId ${{ env.APP_NAME }} `
+            --packVersion ${{ needs.create-release.outputs.version }} `
+            --packDir ./publish/win-arm64 `
+            --mainExe Hymnia.Desktop.exe `
+            --outputDir ./Releases/win-arm64
+
+      - name: Merge Velopack Release Indices
+        run: |
+          # Merge releases.win.json files
+          # Note: On Windows, we can use powershell to merge or just upload them separately.
+          # Velopack usually expects a unified releases.win.json for auto-updates.
+          # For simplicity and reliability in GHA, we'll just upload both and let users choose.
+          # But we can try to merge them if jq is available (it is in windows-latest)
+          # Actually, powershell is easier:
+          $x64 = Get-Content ./Releases/win-x64/releases.win.json | ConvertFrom-Json
+          $arm64 = Get-Content ./Releases/win-arm64/releases.win.json | ConvertFrom-Json
+          ($x64 + $arm64) | ConvertTo-Json | Set-Content ./Releases/releases.win.json
+
+      - name: Upload Velopack RELEASES files
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ needs.create-release.outputs.version }}
-          files: ./Releases/RELEASES
+          files: |
+            ./Releases/win-x64/RELEASES
+            ./Releases/win-arm64/RELEASES
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload Velopack JSON Release Index
@@ -255,188 +288,46 @@ jobs:
           files: ./Releases/releases.win.json
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Find and Rename Velopack Setup
+      - name: Find and Rename Velopack Setups
         shell: pwsh
         run: |
-          $setupFile = Get-ChildItem -Path ./Releases -Filter "*Setup.exe" | Select-Object -First 1
-          if ($setupFile) {
-            $renamedFile = Join-Path (Split-Path $setupFile.FullName) "Hymnia-Windows-Setup.exe"
-            Move-Item -Path $setupFile.FullName -Destination $renamedFile -Force
-            echo "SETUP_FILE=$renamedFile" >> $env:GITHUB_ENV
+          $x64Setup = Get-ChildItem -Path ./Releases/win-x64 -Filter "*Setup.exe" | Select-Object -First 1
+          if ($x64Setup) {
+            $renamed = Join-Path (Split-Path $x64Setup.FullName) "Hymnia-Windows-x64-Setup.exe"
+            Move-Item -Path $x64Setup.FullName -Destination $renamed -Force
+            echo "X64_SETUP=$renamed" >> $env:GITHUB_ENV
+          }
+          $arm64Setup = Get-ChildItem -Path ./Releases/win-arm64 -Filter "*Setup.exe" | Select-Object -First 1
+          if ($arm64Setup) {
+            $renamed = Join-Path (Split-Path $arm64Setup.FullName) "Hymnia-Windows-arm64-Setup.exe"
+            Move-Item -Path $arm64Setup.FullName -Destination $renamed -Force
+            echo "ARM64_WIN_SETUP=$renamed" >> $env:GITHUB_ENV
           }
 
-      - name: Upload Velopack Setup.exe
+      - name: Upload Windows Setups
         uses: softprops/action-gh-release@v2
-        if: env.SETUP_FILE != ''
+        if: ${{ env.X64_SETUP != '' || env.ARM64_WIN_SETUP != '' }}
         with:
           tag_name: v${{ needs.create-release.outputs.version }}
-          files: ${{ env.SETUP_FILE }}
+          files: |
+            ${{ env.X64_SETUP }}
+            ${{ env.ARM64_WIN_SETUP }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Find and Upload Velopack nupkg
-        shell: pwsh
-        run: |
-          $nupkgFile = Get-ChildItem -Path ./Releases -Filter "*.nupkg" | Select-Object -First 1
-          if ($nupkgFile) {
-            echo "NUPKG_FILE=$($nupkgFile.FullName)" >> $env:GITHUB_ENV
-            echo "NUPKG_NAME=$($nupkgFile.Name)" >> $env:GITHUB_ENV
-          }
-
-      - name: Upload Velopack nupkg
-        uses: softprops/action-gh-release@v2
-        if: env.NUPKG_FILE != ''
-        with:
-          tag_name: v${{ needs.create-release.outputs.version }}
-          files: ${{ env.NUPKG_FILE }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Create Windows ZIP (fallback)
+      - name: Create Windows ZIPs (fallback)
         run: |
           Compress-Archive -Path ./publish/win-x64/* -DestinationPath ./${{ env.APP_NAME }}-v${{ needs.create-release.outputs.version }}-windows-x64.zip
+          Compress-Archive -Path ./publish/win-arm64/* -DestinationPath ./${{ env.APP_NAME }}-v${{ needs.create-release.outputs.version }}-windows-arm64.zip
 
-      - name: Upload Windows ZIP Release Asset
+      - name: Upload Windows ZIP Release Assets
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ needs.create-release.outputs.version }}
-          files: ./${{ env.APP_NAME }}-v${{ needs.create-release.outputs.version }}-windows-x64.zip
+          files: |
+            ./${{ env.APP_NAME }}-v${{ needs.create-release.outputs.version }}-windows-x64.zip
+            ./${{ env.APP_NAME }}-v${{ needs.create-release.outputs.version }}-windows-arm64.zip
           token: ${{ secrets.GITHUB_TOKEN }}
 
-  build-macos:
-    name: Build macOS
-    needs: create-release
-    if: needs.create-release.outputs.version != ''
-    runs-on: macos-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v5
-        with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
-
-      - name: Restore dependencies
-        run: dotnet restore
-
-      - name: Build macOS ARM64 (Apple Silicon)
-        run: |
-          dotnet publish ${{ env.PROJECT_PATH }} \
-            -c Release \
-            -r osx-arm64 \
-            --self-contained true \
-            -p:PublishSingleFile=true \
-            -p:Version=${{ needs.create-release.outputs.version }} \
-            -o ./publish/osx-arm64
-
-      - name: Build macOS x64 (Intel)
-        run: |
-          dotnet publish ${{ env.PROJECT_PATH }} \
-            -c Release \
-            -r osx-x64 \
-            --self-contained true \
-            -p:PublishSingleFile=true \
-            -p:Version=${{ needs.create-release.outputs.version }} \
-            -o ./publish/osx-x64
-
-      - name: Copy Resources to publish folders
-        run: |
-          mkdir -p ./publish/osx-arm64/Resources
-          mkdir -p ./publish/osx-x64/Resources
-          cp ./Resources/hymns.db ./publish/osx-arm64/Resources/
-          cp ./Resources/hymns.db ./publish/osx-x64/Resources/
-
-      - name: Install Velopack
-        run: dotnet tool install -g vpk
-
-      - name: Create Velopack Release (ARM64)
-        run: |
-          vpk pack --packId ${{ env.APP_NAME }} \
-            --packVersion ${{ needs.create-release.outputs.version }} \
-            --packDir ./publish/osx-arm64 \
-            --mainExe Hymnia.Desktop \
-            --outputDir ./Releases/arm64
-
-      - name: Create Velopack Release (x64)
-        run: |
-          vpk pack --packId ${{ env.APP_NAME }} \
-            --packVersion ${{ needs.create-release.outputs.version }} \
-            --packDir ./publish/osx-x64 \
-            --mainExe Hymnia.Desktop \
-            --outputDir ./Releases/x64
-
-      - name: Merge Velopack Release Indices
-        run: |
-          mkdir -p ./Releases
-          # Merge the two arrays from the JSON files into one
-          cat ./Releases/arm64/releases.osx.json ./Releases/x64/releases.osx.json | jq -s 'add' > ./Releases/releases.osx.json
-          
-          # verify content
-          echo "Merged releases.osx.json content:"
-          cat ./Releases/releases.osx.json
-
-      - name: Upload Velopack JSON Release Index
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: v${{ needs.create-release.outputs.version }}
-          files: ./Releases/releases.osx.json
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Find and Upload Velopack Setup (ARM64)
-        run: |
-          PKG_FILE=$(find ./Releases/arm64 -name "*.pkg" | head -n 1)
-          if [ -n "$PKG_FILE" ]; then
-            echo "ARM64_PKG=$PKG_FILE" >> $GITHUB_ENV
-          fi
-
-      - name: Upload Velopack Setup (ARM64)
-        if: env.ARM64_PKG != ''
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: v${{ needs.create-release.outputs.version }}
-          files: ${{ env.ARM64_PKG }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Find and Upload Velopack Setup (x64)
-        run: |
-          PKG_FILE=$(find ./Releases/x64 -name "*.pkg" | head -n 1)
-          if [ -n "$PKG_FILE" ]; then
-            echo "X64_PKG=$PKG_FILE" >> $GITHUB_ENV
-          fi
-
-      - name: Upload Velopack Setup (x64)
-        if: env.X64_PKG != ''
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: v${{ needs.create-release.outputs.version }}
-          files: ${{ env.X64_PKG }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Create macOS ARM64 ZIP
-        run: |
-          cd ./publish/osx-arm64
-          zip -r ../../${{ env.APP_NAME }}-v${{ needs.create-release.outputs.version }}-macos-arm64.zip .
-          cd ../..
-
-      - name: Create macOS x64 ZIP
-        run: |
-          cd ./publish/osx-x64
-          zip -r ../../${{ env.APP_NAME }}-v${{ needs.create-release.outputs.version }}-macos-x64.zip .
-          cd ../..
-
-      - name: Upload macOS ARM64 Release Asset
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: v${{ needs.create-release.outputs.version }}
-          files: ./${{ env.APP_NAME }}-v${{ needs.create-release.outputs.version }}-macos-arm64.zip
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload macOS x64 Release Asset
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: v${{ needs.create-release.outputs.version }}
-          files: ./${{ env.APP_NAME }}-v${{ needs.create-release.outputs.version }}-macos-x64.zip
-          token: ${{ secrets.GITHUB_TOKEN }}
 
   build-linux:
     name: Build Linux
@@ -466,21 +357,46 @@ jobs:
             -p:Version=${{ needs.create-release.outputs.version }} \
             -o ./publish/linux-x64
 
-      - name: Copy Resources to publish folder
+      - name: Build Linux ARM64
+        run: |
+          dotnet publish ${{ env.PROJECT_PATH }} \
+            -c Release \
+            -r linux-arm64 \
+            --self-contained true \
+            -p:PublishSingleFile=true \
+            -p:Version=${{ needs.create-release.outputs.version }} \
+            -o ./publish/linux-arm64
+
+      - name: Copy Resources to publish folders
         run: |
           mkdir -p ./publish/linux-x64/Resources
           cp ./Resources/hymns.db ./publish/linux-x64/Resources/
+          mkdir -p ./publish/linux-arm64/Resources
+          cp ./Resources/hymns.db ./publish/linux-arm64/Resources/
 
       - name: Install Velopack
         run: dotnet tool install -g vpk
 
-      - name: Create Velopack Release
+      - name: Create Velopack Release (x64)
         run: |
           vpk pack --packId ${{ env.APP_NAME }} \
             --packVersion ${{ needs.create-release.outputs.version }} \
             --packDir ./publish/linux-x64 \
             --mainExe Hymnia.Desktop \
-            --outputDir ./Releases
+            --outputDir ./Releases/linux-x64
+
+      - name: Create Velopack Release (ARM64)
+        run: |
+          vpk pack --packId ${{ env.APP_NAME }} \
+            --packVersion ${{ needs.create-release.outputs.version }} \
+            --packDir ./publish/linux-arm64 \
+            --mainExe Hymnia.Desktop \
+            --outputDir ./Releases/linux-arm64
+
+      - name: Merge Velopack Release Indices
+        run: |
+          mkdir -p ./Releases
+          cat ./Releases/linux-x64/releases.linux.json ./Releases/linux-arm64/releases.linux.json | jq -s 'add' > ./Releases/releases.linux.json
 
       - name: Upload Velopack JSON Release Index
         uses: softprops/action-gh-release@v2
@@ -489,30 +405,42 @@ jobs:
           files: ./Releases/releases.linux.json
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Find and Upload Velopack AppImage
+      - name: Find and Upload Velopack AppImages
         run: |
-          APPIMAGE=$(find ./Releases -name "*.AppImage" | head -n 1)
-          if [ -n "$APPIMAGE" ]; then
-            echo "APPIMAGE_FILE=$APPIMAGE" >> $GITHUB_ENV
+          X64_APPIMAGE=$(find ./Releases/linux-x64 -name "*.AppImage" | head -n 1)
+          if [ -n "$X64_APPIMAGE" ]; then
+            mv "$X64_APPIMAGE" ./Releases/Hymnia-x64.AppImage
+            echo "X64_APPIMAGE=./Releases/Hymnia-x64.AppImage" >> $GITHUB_ENV
+          fi
+          ARM64_APPIMAGE=$(find ./Releases/linux-arm64 -name "*.AppImage" | head -n 1)
+          if [ -n "$ARM64_APPIMAGE" ]; then
+            mv "$ARM64_APPIMAGE" ./Releases/Hymnia-arm64.AppImage
+            echo "ARM64_APPIMAGE=./Releases/Hymnia-arm64.AppImage" >> $GITHUB_ENV
           fi
 
-      - name: Upload Velopack AppImage
-        if: env.APPIMAGE_FILE != ''
+      - name: Upload Velopack AppImages
+        if: ${{ env.X64_APPIMAGE != '' || env.ARM64_APPIMAGE != '' }}
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ needs.create-release.outputs.version }}
-          files: ${{ env.APPIMAGE_FILE }}
+          files: |
+            ${{ env.X64_APPIMAGE }}
+            ${{ env.ARM64_APPIMAGE }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Create Linux ZIP
+      - name: Create Linux ZIPs
         run: |
           cd ./publish/linux-x64
           tar -czf ../../${{ env.APP_NAME }}-v${{ needs.create-release.outputs.version }}-linux-x64.tar.gz .
+          cd ../../publish/linux-arm64
+          tar -czf ../../${{ env.APP_NAME }}-v${{ needs.create-release.outputs.version }}-linux-arm64.tar.gz .
           cd ../..
 
-      - name: Upload Linux Release Asset
+      - name: Upload Linux Release Assets
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ needs.create-release.outputs.version }}
-          files: ./${{ env.APP_NAME }}-v${{ needs.create-release.outputs.version }}-linux-x64.tar.gz
+          files: |
+            ./${{ env.APP_NAME }}-v${{ needs.create-release.outputs.version }}-linux-x64.tar.gz
+            ./${{ env.APP_NAME }}-v${{ needs.create-release.outputs.version }}-linux-arm64.tar.gz
           token: ${{ secrets.GITHUB_TOKEN }}
