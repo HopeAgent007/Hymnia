@@ -191,7 +191,7 @@ jobs:
           name: Hymnia v${{ steps.get_version.outputs.version }}
           body_path: release_body.md
           draft: false
-          prerelease: false
+          prerelease: true
           token: ${{ secrets.GITHUB_TOKEN }}
 
   build-windows:
@@ -221,6 +221,7 @@ jobs:
             -p:PublishSingleFile=true `
             -p:IncludeNativeLibrariesForSelfExtract=true `
             -p:Version=${{ needs.create-release.outputs.version }} `
+            -p:DefineConstants=TARGET_X64 `
             -o ./publish/win-x64
 
       - name: Build Windows ARM64
@@ -232,6 +233,7 @@ jobs:
             -p:PublishSingleFile=true `
             -p:IncludeNativeLibrariesForSelfExtract=true `
             -p:Version=${{ needs.create-release.outputs.version }} `
+            -p:DefineConstants=TARGET_ARM64 `
             -o ./publish/win-arm64
 
       - name: Copy Resources to publish folders
@@ -281,11 +283,15 @@ jobs:
             ./Releases/win-arm64/RELEASES
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Upload Velopack JSON Release Index
+      - name: Upload Velopack nupkgs
         uses: softprops/action-gh-release@v2
+        if: ${{ env.NUPKG_FILE != '' }}
         with:
           tag_name: v${{ needs.create-release.outputs.version }}
-          files: ./Releases/releases.win.json
+          files: |
+            ${{ env.NUPKG_FILE }}
+            ./Releases/win-x64/*.nupkg
+            ./Releases/win-arm64/*.nupkg
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Find and Rename Velopack Setups
@@ -355,6 +361,7 @@ jobs:
             --self-contained true \
             -p:PublishSingleFile=true \
             -p:Version=${{ needs.create-release.outputs.version }} \
+            -p:DefineConstants=TARGET_X64 \
             -o ./publish/linux-x64
 
       - name: Build Linux ARM64
@@ -365,6 +372,7 @@ jobs:
             --self-contained true \
             -p:PublishSingleFile=true \
             -p:Version=${{ needs.create-release.outputs.version }} \
+            -p:DefineConstants=TARGET_ARM64 \
             -o ./publish/linux-arm64
 
       - name: Copy Resources to publish folders
