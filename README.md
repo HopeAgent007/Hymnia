@@ -29,7 +29,9 @@ SDAHymns is a complete rewrite of a legacy hymn display application, designed to
 - 🚧 **Service Planner** - Pre-plan hymn orders for services (planned)
 - 🚧 **Export** - Generate PDFs and images for bulletins (planned)
 - 🚧 **Statistics** - Track hymn usage frequency (planned)
-
+- ✅ **Preview Window** – Split-panel display: current hymn (large number + title) + dimmed next-hymn lyrics preview for seamless live navigation.
+- ✅ **Remote Control** – Primary operator interface with numpad, category selector (Creștine, Companions, Exploratori, Licurici, Tineret, Diverse), live hymn title preview as-you-type, black screen toggle, 8 programmable quick-slots, and Anterior/Următor navigation.
+  
 ## Tech Stack
 
 - **Language:** C# (.NET 10 LTS)
@@ -44,9 +46,7 @@ SDAHymns is a complete rewrite of a legacy hymn display application, designed to
 
 - Windows 10/11 (primary target)
 - Windows 7/8 (if feasible)
-- macOS ARM (M1/M2/M3)
-- macOS Intel
-
+- 
 ## Getting Started
 
 ### Prerequisites
