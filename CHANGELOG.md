@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 This release marks the official rebranding of the project from **SDAHymns** to **Hymnia**. The application is now distributed under the new name with updated namespaces, solution structure, and project references.
 
 ### Added
+- **Linux Support** – Initial release for Linux (`linux-x64`). Available as a portable `.zip` package.
 - **New Branding Icon** – Updated application icon with high-resolution assets for better visibility on Windows taskbar and start menu.
 - **Settings Service** – Persistent user settings with profile-aware save/load, database migration support, and graceful fallback defaults.
 - **Profile Editor** – Full UI for creating, editing, and deleting display profiles (fonts, colors, backgrounds, effects) with live preview.

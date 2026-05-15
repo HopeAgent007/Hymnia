@@ -162,7 +162,12 @@ publish-mac:
 # Publish for Linux
 publish-linux:
 	@echo "Publishing for Linux..."
-	dotnet publish src/Hymnia.Desktop -c Release -r linux-x64 --self-contained
+	dotnet publish src/Hymnia.Desktop -c Release -r linux-x64 --self-contained -o publish/linux-x64
+
+# Pack installer for Linux (Zip)
+pack-linux: publish-linux
+	@echo "Packing Linux release..."
+	powershell -Command "Compress-Archive -Path publish/linux-x64/* -DestinationPath Releases/Hymnia-linux-x64.zip -Force"
 
 # Release Management
 .PHONY: version-bump release
