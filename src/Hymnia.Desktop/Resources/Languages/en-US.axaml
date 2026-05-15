@@ -80,7 +80,7 @@
     <sys:String x:Key="Text.Normal">Normal</sys:String>
     <sys:String x:Key="Text.SemiBold">SemiBold</sys:String>
     <sys:String x:Key="Text.Bold">Bold</sys:String>
-    <sys:String x:Key="Main.WindowTitle">SDA Hymns - Projection Display</sys:String>
+    <sys:String x:Key="Main.WindowTitle">Hymnia - Projection Display</sys:String>
     <sys:String x:Key="Recorder.TitleShort">🎯 Record</sys:String>
     <sys:String x:Key="Recorder.Tip">Record verse timings</sys:String>
     <sys:String x:Key="Shortcuts.Category.Global">Global</sys:String>
@@ -152,11 +152,11 @@
     <sys:String x:Key="Update.Later">Later</sys:String>
 
     <!-- Remote Widget -->
-    <sys:String x:Key="Remote.Title">SDAHymns Remote</sys:String>
+    <sys:String x:Key="Remote.Title">Hymnia Remote</sys:String>
     <sys:String x:Key="Remote.Menu">Menu</sys:String>
     <sys:String x:Key="Remote.AdvancedMode">Advanced Mode</sys:String>
     <sys:String x:Key="Remote.ToggleNumPad">Toggle NumPad</sys:String>
-    <sys:String x:Key="Remote.About">About SDAHymns</sys:String>
+    <sys:String x:Key="Remote.About">About Hymnia</sys:String>
     <sys:String x:Key="Remote.Minimize">Minimize</sys:String>
     <sys:String x:Key="Remote.AlwaysOnTop">Always on Top</sys:String>
     <sys:String x:Key="Remote.LockPosition">Lock Position</sys:String>

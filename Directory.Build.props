@@ -6,9 +6,9 @@
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <Version>1.0.1-b</Version>
-    <Authors>SDA Hymns Contributors</Authors>
+    <Authors>Hymnia Contributors</Authors>
     <Company>Romanian Seventh Day Adventist Church</Company>
-    <Product>SDA Hymns</Product>
+    <Product>Hymnia</Product>
     <Copyright>Copyright © 2025 - AGPL-3.0 License</Copyright>
 
     <!-- Code Analysis -->

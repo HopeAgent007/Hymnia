@@ -1,10 +1,10 @@
-# SDAHymns
+# Hymnia
 
 A modern, cross-platform desktop application for displaying hymns in church services, built for the Romanian Seventh Day Adventist Church.
 
 ## Overview
 
-SDAHymns is a complete rewrite of a legacy hymn display application, designed to improve user experience, support streaming workflows, and enable automation. The application displays hymns on projectors and supports customizable styling for OBS/streaming integration.
+Hymnia is a complete rewrite of a legacy hymn display application, designed to improve user experience, support streaming workflows, and enable automation. The application displays hymns on projectors and supports customizable styling for OBS/streaming integration.
 
 ## Features
 
@@ -18,19 +18,22 @@ SDAHymns is a complete rewrite of a legacy hymn display application, designed to
   - Imnuri tineret (Youth hymns)
 
 ### Advanced Features
-- ✅ **Auto-Updates** - Seamless update mechanism via GitHub Releases with Velopack
-- ✅ **Piano Recordings** - Audio playback with sync, recorder mode, countdown, device selection
-- ✅ **Audio Library Management** - Download from GitHub/Pi, verify checksums, migrate library
-- ✅ **Display Profiles** - 6 preset profiles + full editor (fonts, colors, backgrounds, effects)
-- ✅ **Keyboard-Driven** - Full hotkey support with F1 overlay and customizable shortcuts
-- ✅ **OBS/Streaming Optimization** - Transparent backgrounds, custom fonts/colors for streaming
-- ✅ **Offline-First** - Fully functional without internet
-- 🚧 **CLI Support** - Full command-line interface for automation (planned)
-- 🚧 **Service Planner** - Pre-plan hymn orders for services (planned)
-- 🚧 **Export** - Generate PDFs and images for bulletins (planned)
-- 🚧 **Statistics** - Track hymn usage frequency (planned)
+- ✅ **Smart Projection Layouts** – Context-aware styling that automatically switches between Inline Layout for numbered verses and Above/Left Layout for the Chorus (Refren), with smart label extraction and improved scaling for long hymn lines on any screen ratio.
+- ✅ **Auto-Updates** – Seamless update mechanism via GitHub Releases with Velopack.
+- ✅ **Piano Recordings** – Audio playback with sync, recorder mode, countdown, and device selection.
+- ✅ **Audio Library Management** – Download from GitHub/Pi, verify checksums, migrate library.
+- ✅ **Display Profiles** – 6 preset profiles + full editor (fonts, colors, backgrounds, effects).
+- ✅ **Keyboard-Driven** – Full hotkey support with F1 overlay and customizable shortcuts.
+- ✅ **Offline-First** – Fully functional without internet.
 - ✅ **Preview Window** – Split-panel display: current hymn (large number + title) + dimmed next-hymn lyrics preview for seamless live navigation.
-- ✅ **Remote Control** – Primary operator interface with numpad, category selector (Creștine, Companions, Exploratori, Licurici, Tineret, Diverse), live hymn title preview as-you-type, black screen toggle, 8 programmable quick-slots, and Anterior/Următor navigation.
+- ✅ **Remote Control** – Primary operator interface with numpad, category selector (Creștine, Companions, Exploratori, Licurici, Tineret, Diverse), live hymn title preview as-you-type, live slide counter (e.g. "Refren 2/8"), black screen toggle, 8 programmable quick-slots, and Anterior/Următor navigation — fully synced with the main window and hotkeys.
+- ✅ **One-Tap Navigation** – Optimized loading engine for instant slide advancement without lag.
+- ✅ **Unified Closure** – Closing the display or finishing the last slide automatically shuts down the entire projection system cleanly.
+- 🚧 **CLI Support** – Full command-line interface for automation (planned).
+- 🚧 **Service Planner** – Pre-plan hymn orders for services (planned).
+- 🚧 **Export** – Generate PDFs and images for bulletins (planned).
+- 🚧 **Statistics** – Track hymn usage frequency (planned).
+- 🚧 **OBS/Streaming Optimization** – Transparent backgrounds, custom fonts/colors for streaming (working on it).
   
 ## Tech Stack
 
@@ -58,8 +61,8 @@ SDAHymns is a complete rewrite of a legacy hymn display application, designed to
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/SDAHymns.git
-cd SDAHymns
+git clone https://github.com/yourusername/Hymnia.git
+cd Hymnia
 ```
 
 ### Build the Solution
@@ -79,22 +82,22 @@ dotnet test
 
 ```bash
 # Run desktop application
-dotnet run --project src/SDAHymns.Desktop
+dotnet run --project src/Hymnia.Desktop
 
 # Run CLI
-dotnet run --project src/SDAHymns.CLI -- --help
+dotnet run --project src/Hymnia.CLI -- --help
 ```
 
 ## Project Structure
 
 ```
-SDAHymns/
+Hymnia/
 ├── src/
-│   ├── SDAHymns.Core/          # Shared business logic and data layer
-│   ├── SDAHymns.Desktop/       # Avalonia UI application
-│   └── SDAHymns.CLI/           # Command-line interface
+│   ├── Hymnia.Core/          # Shared business logic and data layer
+│   ├── Hymnia.Desktop/       # Avalonia UI application
+│   └── Hymnia.CLI/           # Command-line interface
 ├── tests/
-│   └── SDAHymns.Tests/         # Unit and integration tests
+│   └── Hymnia.Tests/         # Unit and integration tests
 ├── Resources/                   # Application resources
 │   ├── audio/                  # Piano recordings (by category)
 │   ├── config/                 # Configuration files
@@ -136,20 +139,20 @@ dotnet test
 dotnet test --collect:"XPlat Code Coverage"
 
 # Run specific test project
-dotnet test tests/SDAHymns.Tests
+dotnet test tests/Hymnia.Tests
 ```
 
 ### Database Migrations
 
 ```bash
 # Add new migration
-dotnet ef migrations add MigrationName --project src/SDAHymns.Core
+dotnet ef migrations add MigrationName --project src/Hymnia.Core
 
 # Update database
-dotnet ef database update --project src/SDAHymns.Core
+dotnet ef database update --project src/Hymnia.Core
 
 # Remove last migration
-dotnet ef migrations remove --project src/SDAHymns.Core
+dotnet ef migrations remove --project src/Hymnia.Core
 ```
 
 ## Contributing

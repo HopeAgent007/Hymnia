@@ -1,4 +1,4 @@
-# Install git hooks for SDAHymns (PowerShell version)
+# Install git hooks for Hymnia (PowerShell version)
 
 Write-Host "Installing git hooks..." -ForegroundColor Cyan
 

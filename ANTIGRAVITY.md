@@ -4,9 +4,9 @@ This file provides guidance to Antigravity when working with code in this reposi
 
 ## Project Overview
 
-SDAHymns is a modern, cross-platform desktop application for displaying hymns in church services, built for the Romanian Seventh Day Adventist Church. 
+Hymnia is a modern, cross-platform desktop application for displaying hymns in church services, built for the Romanian Seventh Day Adventist Church. 
 
-**Origin:** This project is a complete rewrite from scratch of the legacy SDAHymns application, based on the work from the [ThorSPB/SDAHymns](https://github.com/ThorSPB/SDAHymns) repository. It focuses on improved UX, streaming optimization, and modern broadcast capabilities.
+**Origin:** This project is a fork of [ThorSPB/SDAHymns](https://github.com/ThorSPB/SDAHymns), extended with additional features and an improved user experience.
 
 ## Technology Stack
 

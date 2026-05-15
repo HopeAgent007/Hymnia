@@ -44,6 +44,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SDAHymns.Core\SDAHymns.Core.csproj" />
+    <ProjectReference Include="..\Hymnia.Core\Hymnia.Core.csproj" />
   </ItemGroup>
 </Project>

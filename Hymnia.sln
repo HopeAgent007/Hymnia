@@ -1,19 +1,19 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{827E0CD3-B72D-47B6-A68D-7590B98EB39B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDAHymns.Core", "src\SDAHymns.Core\SDAHymns.Core.csproj", "{68FC63DB-C3B6-407A-8BA7-CF414EDE022C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hymnia.Core", "src\Hymnia.Core\Hymnia.Core.csproj", "{68FC63DB-C3B6-407A-8BA7-CF414EDE022C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDAHymns.Desktop", "src\SDAHymns.Desktop\SDAHymns.Desktop.csproj", "{A6616060-C07B-4C0C-832C-73ACA986D698}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hymnia.Desktop", "src\Hymnia.Desktop\Hymnia.Desktop.csproj", "{A6616060-C07B-4C0C-832C-73ACA986D698}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDAHymns.CLI", "src\SDAHymns.CLI\SDAHymns.CLI.csproj", "{0DC223F7-2EAD-4E14-8466-63159E991204}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hymnia.CLI", "src\Hymnia.CLI\Hymnia.CLI.csproj", "{0DC223F7-2EAD-4E14-8466-63159E991204}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{0AB3BF05-4346-4AA6-1389-037BE0695223}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDAHymns.Tests", "tests\SDAHymns.Tests\SDAHymns.Tests.csproj", "{F0F1EBF2-4E8D-4622-85EA-154F70031BAD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hymnia.Tests", "tests\Hymnia.Tests\Hymnia.Tests.csproj", "{F0F1EBF2-4E8D-4622-85EA-154F70031BAD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

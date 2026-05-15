@@ -80,7 +80,7 @@
     <sys:String x:Key="Text.Normal">Normal</sys:String>
     <sys:String x:Key="Text.SemiBold">SemiBold</sys:String>
     <sys:String x:Key="Text.Bold">Bold</sys:String>
-    <sys:String x:Key="Main.WindowTitle">SDA Hymns - Afișaj Proiecție</sys:String>
+    <sys:String x:Key="Main.WindowTitle">Hymnia - Afișaj Proiecție</sys:String>
     <sys:String x:Key="Recorder.TitleShort">🎯 Înregistrare</sys:String>
     <sys:String x:Key="Recorder.Tip">Înregistrează timpii strofelor</sys:String>
     <sys:String x:Key="Shortcuts.Category.Global">Global</sys:String>
@@ -148,11 +148,11 @@
     <sys:String x:Key="Update.Later">Mai târziu</sys:String>
 
     <!-- Remote Widget -->
-    <sys:String x:Key="Remote.Title">Telecomandă SDAHymns</sys:String>
+    <sys:String x:Key="Remote.Title">Telecomandă Hymnia</sys:String>
     <sys:String x:Key="Remote.Menu">Meniu</sys:String>
     <sys:String x:Key="Remote.AdvancedMode">Mod Avansat</sys:String>
     <sys:String x:Key="Remote.ToggleNumPad">Comută Tastatură Numerică</sys:String>
-    <sys:String x:Key="Remote.About">Despre SDAHymns</sys:String>
+    <sys:String x:Key="Remote.About">Despre Hymnia</sys:String>
     <sys:String x:Key="Remote.Minimize">Minimizare</sys:String>
     <sys:String x:Key="Remote.AlwaysOnTop">Întotdeauna deasupra</sys:String>
     <sys:String x:Key="Remote.LockPosition">Blochează Poziția</sys:String>

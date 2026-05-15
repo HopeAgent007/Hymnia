@@ -1,5 +1,5 @@
 #!/bin/bash
-# Install git hooks for SDAHymns
+# Install git hooks for Hymnia
 
 echo "Installing git hooks..."
 

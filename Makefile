@@ -1,11 +1,11 @@
-# Makefile for SDAHymns
+# Makefile for Hymnia
 # Works on Windows (with make installed), Linux, and macOS
 
 .PHONY: help setup restore build test run clean format lint install-hooks version-bump release
 
 # Default target
 help:
-	@echo "SDAHymns Development Commands"
+	@echo "Hymnia Development Commands"
 	@echo ""
 	@echo "Setup (first time):"
 	@echo "  make setup          - Complete first-time setup (restore + build + install hooks)"
@@ -78,12 +78,12 @@ test-verbose:
 # Run desktop application
 run:
 	@echo "Starting desktop application..."
-	dotnet run --project src/SDAHymns.Desktop
+	dotnet run --project src/Hymnia.Desktop
 
 # Run CLI application
 run-cli:
 	@echo "Starting CLI application..."
-	dotnet run --project src/SDAHymns.CLI
+	dotnet run --project src/Hymnia.CLI
 
 # Format code
 format:
@@ -111,7 +111,7 @@ endif
 # Database: Apply migrations
 db-update:
 	@echo "Applying database migrations..."
-	dotnet ef database update --project src/SDAHymns.Core
+	dotnet ef database update --project src/Hymnia.Core
 
 # Database: Create new migration
 db-migration:
@@ -120,7 +120,7 @@ ifndef NAME
 	@exit 1
 endif
 	@echo "Creating migration: $(NAME)"
-	dotnet ef migrations add $(NAME) --project src/SDAHymns.Core
+	dotnet ef migrations add $(NAME) --project src/Hymnia.Core
 
 # Clean build artifacts
 clean:
@@ -138,18 +138,18 @@ clean-all:
 # Watch mode (auto-rebuild on file changes)
 watch:
 	@echo "Starting watch mode..."
-	dotnet watch --project src/SDAHymns.Desktop run
+	dotnet watch --project src/Hymnia.Desktop run
 
 # Publish for Windows
 publish-win:
 	@echo "Publishing for Windows..."
-	dotnet publish src/SDAHymns.Desktop -c Release -r win-x64 --self-contained -o publish/win-x64
+	dotnet publish src/Hymnia.Desktop -c Release -r win-x64 --self-contained -o publish/win-x64
 
 # Pack installer for Windows
 pack-win: publish-win
 	@echo "Packing installer for Windows..."
-	$(eval APP_VERSION=$(shell dotnet build src/SDAHymns.Desktop --getProperty:Version))
-	dotnet tool run --allow-roll-forward vpk pack -u SDAHymns -v $(APP_VERSION) -p publish/win-x64 -e SDAHymns.Desktop.exe --packAuthors "SDA Hymns Contributors" --packTitle "SDA Hymns" --icon src/SDAHymns.Desktop/Assets/icon.ico --splashImage src/SDAHymns.Desktop/Assets/splash.png
+	$(eval APP_VERSION=$(shell dotnet build src/Hymnia.Desktop --getProperty:Version))
+	dotnet tool run --allow-roll-forward vpk pack -u Hymnia -v $(APP_VERSION) -p publish/win-x64 -e Hymnia.Desktop.exe --packAuthors "Hymnia Contributors" --packTitle "Hymnia" --icon src/Hymnia.Desktop/Assets/icon.ico --splashImage src/Hymnia.Desktop/Assets/splash.png
 
 # Pack installer (shortcut for Windows)
 pack: pack-win
@@ -157,12 +157,12 @@ pack: pack-win
 # Publish for macOS
 publish-mac:
 	@echo "Publishing for macOS..."
-	dotnet publish src/SDAHymns.Desktop -c Release -r osx-arm64 --self-contained
+	dotnet publish src/Hymnia.Desktop -c Release -r osx-arm64 --self-contained
 
 # Publish for Linux
 publish-linux:
 	@echo "Publishing for Linux..."
-	dotnet publish src/SDAHymns.Desktop -c Release -r linux-x64 --self-contained
+	dotnet publish src/Hymnia.Desktop -c Release -r linux-x64 --self-contained
 
 # Release Management
 .PHONY: version-bump release
@@ -193,5 +193,5 @@ endif
 	git push origin v$(VERSION)
 	@echo ""
 	@echo "✅ Release v$(VERSION) triggered!"
-	@echo "Check GitHub Actions: https://github.com/your-org/SDAHymns/actions"
-	@echo "Release will be available at: https://github.com/your-org/SDAHymns/releases"
+	@echo "Check GitHub Actions: https://github.com/your-org/Hymnia/actions"
+	@echo "Release will be available at: https://github.com/your-org/Hymnia/releases"

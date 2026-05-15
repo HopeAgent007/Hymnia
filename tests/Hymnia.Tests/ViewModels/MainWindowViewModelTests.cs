@@ -32,7 +32,7 @@ public class MainWindowViewModelTests
     public void Constructor_InitializesWithNoUpdateAvailable()
     {
         // Arrange & Act
-        var viewModel = new MainWindowViewModel(_mockHymnService.Object, _mockUpdateService.Object, _mockSearchService.Object, _mockProfileService.Object, _mockAudioPlayer.Object, _mockSettingsService.Object);
+        var viewModel = new MainWindowViewModel(_mockHymnService.Object, _mockUpdateService.Object, _mockSearchService.Object, _mockProfileService.Object, _mockAudioPlayer.Object, _mockSettingsService.Object, new SDAHymns.Core.Services.BroadcastSyncService());
 
         // Assert
         viewModel.IsUpdateAvailable.Should().BeFalse();
@@ -45,7 +45,7 @@ public class MainWindowViewModelTests
     public void ShowUpdateNotification_SetsPropertiesCorrectly()
     {
         // Arrange
-        var viewModel = new MainWindowViewModel(_mockHymnService.Object, _mockUpdateService.Object, _mockSearchService.Object, _mockProfileService.Object, _mockAudioPlayer.Object, _mockSettingsService.Object);
+        var viewModel = new MainWindowViewModel(_mockHymnService.Object, _mockUpdateService.Object, _mockSearchService.Object, _mockProfileService.Object, _mockAudioPlayer.Object, _mockSettingsService.Object, new SDAHymns.Core.Services.BroadcastSyncService());
         var mockUpdateInfo = CreateMockUpdateInfo("1.2.3");
 
         // Act
@@ -60,7 +60,7 @@ public class MainWindowViewModelTests
     public void DismissUpdate_HidesBanner()
     {
         // Arrange
-        var viewModel = new MainWindowViewModel(_mockHymnService.Object, _mockUpdateService.Object, _mockSearchService.Object, _mockProfileService.Object, _mockAudioPlayer.Object, _mockSettingsService.Object);
+        var viewModel = new MainWindowViewModel(_mockHymnService.Object, _mockUpdateService.Object, _mockSearchService.Object, _mockProfileService.Object, _mockAudioPlayer.Object, _mockSettingsService.Object, new SDAHymns.Core.Services.BroadcastSyncService());
         var mockUpdateInfo = CreateMockUpdateInfo("1.2.3");
         viewModel.ShowUpdateNotification(mockUpdateInfo);
 
@@ -75,7 +75,7 @@ public class MainWindowViewModelTests
     public async Task UpdateNowAsync_WithSuccessfulDownload_CallsApplyUpdatesAndRestart()
     {
         // Arrange
-        var viewModel = new MainWindowViewModel(_mockHymnService.Object, _mockUpdateService.Object, _mockSearchService.Object, _mockProfileService.Object, _mockAudioPlayer.Object, _mockSettingsService.Object);
+        var viewModel = new MainWindowViewModel(_mockHymnService.Object, _mockUpdateService.Object, _mockSearchService.Object, _mockProfileService.Object, _mockAudioPlayer.Object, _mockSettingsService.Object, new SDAHymns.Core.Services.BroadcastSyncService());
         var mockUpdateInfo = CreateMockUpdateInfo("1.2.3");
         viewModel.ShowUpdateNotification(mockUpdateInfo);
 
@@ -103,7 +103,7 @@ public class MainWindowViewModelTests
     public async Task UpdateNowAsync_WithFailedDownload_KeepsBannerVisible()
     {
         // Arrange
-        var viewModel = new MainWindowViewModel(_mockHymnService.Object, _mockUpdateService.Object, _mockSearchService.Object, _mockProfileService.Object, _mockAudioPlayer.Object, _mockSettingsService.Object);
+        var viewModel = new MainWindowViewModel(_mockHymnService.Object, _mockUpdateService.Object, _mockSearchService.Object, _mockProfileService.Object, _mockAudioPlayer.Object, _mockSettingsService.Object, new SDAHymns.Core.Services.BroadcastSyncService());
         var mockUpdateInfo = CreateMockUpdateInfo("1.2.3");
         viewModel.ShowUpdateNotification(mockUpdateInfo);
 
@@ -124,7 +124,7 @@ public class MainWindowViewModelTests
     public async Task UpdateNowAsync_WithFailedDownload_ResetsDownloadingState()
     {
         // Arrange
-        var viewModel = new MainWindowViewModel(_mockHymnService.Object, _mockUpdateService.Object, _mockSearchService.Object, _mockProfileService.Object, _mockAudioPlayer.Object, _mockSettingsService.Object);
+        var viewModel = new MainWindowViewModel(_mockHymnService.Object, _mockUpdateService.Object, _mockSearchService.Object, _mockProfileService.Object, _mockAudioPlayer.Object, _mockSettingsService.Object, new SDAHymns.Core.Services.BroadcastSyncService());
         var mockUpdateInfo = CreateMockUpdateInfo("1.2.3");
         viewModel.ShowUpdateNotification(mockUpdateInfo);
 
@@ -143,7 +143,7 @@ public class MainWindowViewModelTests
     public async Task UpdateNowAsync_WithNoPendingUpdate_DoesNothing()
     {
         // Arrange
-        var viewModel = new MainWindowViewModel(_mockHymnService.Object, _mockUpdateService.Object, _mockSearchService.Object, _mockProfileService.Object, _mockAudioPlayer.Object, _mockSettingsService.Object);
+        var viewModel = new MainWindowViewModel(_mockHymnService.Object, _mockUpdateService.Object, _mockSearchService.Object, _mockProfileService.Object, _mockAudioPlayer.Object, _mockSettingsService.Object, new SDAHymns.Core.Services.BroadcastSyncService());
         // Don't call ShowUpdateNotification - no pending update
 
         // Act
@@ -159,7 +159,7 @@ public class MainWindowViewModelTests
     public void ShowUpdateNotification_WithDifferentVersions_UpdatesLatestVersion()
     {
         // Arrange
-        var viewModel = new MainWindowViewModel(_mockHymnService.Object, _mockUpdateService.Object, _mockSearchService.Object, _mockProfileService.Object, _mockAudioPlayer.Object, _mockSettingsService.Object);
+        var viewModel = new MainWindowViewModel(_mockHymnService.Object, _mockUpdateService.Object, _mockSearchService.Object, _mockProfileService.Object, _mockAudioPlayer.Object, _mockSettingsService.Object, new SDAHymns.Core.Services.BroadcastSyncService());
 
         // Act
         var update1 = CreateMockUpdateInfo("1.0.0");
@@ -179,7 +179,7 @@ public class MainWindowViewModelTests
     public void IsUpdateAvailable_AfterDismiss_BecomesFalse()
     {
         // Arrange
-        var viewModel = new MainWindowViewModel(_mockHymnService.Object, _mockUpdateService.Object, _mockSearchService.Object, _mockProfileService.Object, _mockAudioPlayer.Object, _mockSettingsService.Object);
+        var viewModel = new MainWindowViewModel(_mockHymnService.Object, _mockUpdateService.Object, _mockSearchService.Object, _mockProfileService.Object, _mockAudioPlayer.Object, _mockSettingsService.Object, new SDAHymns.Core.Services.BroadcastSyncService());
         var mockUpdateInfo = CreateMockUpdateInfo("1.2.3");
         viewModel.ShowUpdateNotification(mockUpdateInfo);
         viewModel.IsUpdateAvailable.Should().BeTrue();
