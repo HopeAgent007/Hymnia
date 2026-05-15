@@ -6,7 +6,7 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
         x:Class="SDAHymns.Desktop.Views.DisplayWindow"
         x:DataType="vm:MainWindowViewModel"
-        Title="SDA Hymns - Display"
+        Title="{DynamicResource Presenter.DisplayTitle}"
         Background="Black"
         WindowState="Normal"
         CanResize="True">
@@ -24,46 +24,85 @@
             <Grid>
                 <!-- Main Content -->
                 <Grid RowDefinitions="Auto,*">
-                    <!-- Hymn Title -->
-                    <Border Grid.Row="0"
-                            x:Name="TitleBorder"
-                            Background="Black"
-                            Padding="40,30">
-                        <TextBlock x:Name="HymnTitleText"
-                                   Text="{Binding HymnTitle}"
-                                   FontSize="36"
-                                   FontWeight="Bold"
-                                   HorizontalAlignment="Center"
-                                   TextAlignment="Center"
-                                   Foreground="White"
-                                   TextWrapping="Wrap"/>
-                    </Border>
+                    <!-- Verse Content Area -->
+                    <Viewbox Grid.Row="1" Stretch="Uniform" StretchDirection="Both">
+                        <Grid>
+                            <!-- Normal Verse Content Area -->
+                            <StackPanel x:Name="ContentPanel"
+                                        IsVisible="{Binding IsNotTitleSlide}"
+                                        VerticalAlignment="Center"
+                                        HorizontalAlignment="Center"
+                                        Margin="40">
+                                
+                                <!-- Chorus Layout (Above - label above text) -->
+                                <StackPanel IsVisible="{Binding IsChorus}" MaxWidth="1500" HorizontalAlignment="Left">
+                                    <TextBlock x:Name="ChorusLabelText"
+                                               Text="{DynamicResource Text.Chorus}"
+                                               FontSize="120"
+                                               FontWeight="Bold"
+                                               HorizontalAlignment="Left"
+                                               Margin="0,0,0,10"
+                                               Foreground="{Binding CurrentVerseLabelColor}"/>
+                                    <TextBlock x:Name="ChorusContentText"
+                                               Text="{Binding CurrentVerseContent}"
+                                               FontSize="100"
+                                               FontWeight="Bold"
+                                               TextWrapping="Wrap"
+                                               TextAlignment="Left"
+                                               LineHeight="130"
+                                               Foreground="White"/>
+                                </StackPanel>
 
-                    <!-- Verse Content -->
-                    <Viewbox Grid.Row="1" Stretch="Uniform" StretchDirection="DownOnly">
-                        <StackPanel x:Name="ContentPanel"
-                                   VerticalAlignment="Center"
-                                   HorizontalAlignment="Left"
-                                   Width="1200"
-                                   Margin="100,60,100,60">
-                            <!-- Verse Label (e.g., "1.", "Refren") -->
-                            <TextBlock x:Name="VerseLabelText"
-                                      Text="{Binding CurrentVerseLabel}"
-                                      FontSize="32"
-                                      FontWeight="SemiBold"
-                                      HorizontalAlignment="Left"
-                                      Margin="0,0,0,40"
-                                      Foreground="#CCCCCC"/>
+                                <!-- Verse Style (Inline) -->
+                                <Grid ColumnDefinitions="Auto,*" 
+                                      IsVisible="{Binding IsVerseNumber}" 
+                                      MaxWidth="1500">
+                                    <TextBlock x:Name="VerseLabelText"
+                                              Grid.Column="0"
+                                              Text="{Binding CurrentVerseLabel}"
+                                              FontSize="100"
+                                              FontWeight="Bold"
+                                              VerticalAlignment="Top"
+                                              Margin="0,0,30,0"
+                                              LineHeight="130"
+                                              Foreground="{Binding CurrentVerseLabelColor}"/>
+                                    <TextBlock x:Name="VerseContentText"
+                                              Grid.Column="1"
+                                              Text="{Binding CurrentVerseContent}"
+                                              FontSize="100"
+                                              FontWeight="Bold"
+                                              TextWrapping="Wrap"
+                                              TextAlignment="Left"
+                                              LineHeight="130"
+                                              VerticalAlignment="Top"
+                                              Foreground="White"/>
+                                </Grid>
 
-                            <!-- Verse Content -->
-                            <TextBlock x:Name="VerseContentText"
-                                      Text="{Binding CurrentVerseContent}"
-                                      FontSize="56"
-                                      TextWrapping="Wrap"
-                                      TextAlignment="Left"
-                                      LineHeight="75"
-                                      Foreground="White"/>
-                        </StackPanel>
+                                <!-- Fallback for unlabeled verses -->
+                                <TextBlock Text="{Binding CurrentVerseContent}"
+                                           IsVisible="{Binding IsUnlabeledVerse}"
+                                           FontSize="100"
+                                           FontWeight="Bold"
+                                           TextWrapping="Wrap"
+                                           TextAlignment="Center"
+                                           LineHeight="130"
+                                           MaxWidth="1400"
+                                           Foreground="White"/>
+                            </StackPanel>
+
+                            <!-- Title Slide Content -->
+                            <StackPanel x:Name="TitleSlidePanel"
+                                       IsVisible="{Binding IsTitleSlide}"
+                                       VerticalAlignment="Center"
+                                       HorizontalAlignment="Center"
+                                       Margin="50">
+                                <TextBlock TextWrapping="Wrap" TextAlignment="Center" HorizontalAlignment="Center" MaxWidth="1600">
+                                    <Run Text="{Binding CurrentHymn.Number}" Foreground="#FFD700" FontSize="130" FontWeight="Bold"/>
+                                    <Run Text=". " Foreground="#FFD700" FontSize="130" FontWeight="Bold"/>
+                                    <Run Text="{Binding HymnTitleOnly}" Foreground="White" FontSize="130" FontWeight="Bold"/>
+                                </TextBlock>
+                            </StackPanel>
+                        </Grid>
                     </Viewbox>
                 </Grid>
 
@@ -73,7 +112,7 @@
                     <StackPanel VerticalAlignment="Center"
                                 HorizontalAlignment="Center"
                                 Spacing="30">
-                        <TextBlock Text="Starting audio in..."
+                        <TextBlock Text="{DynamicResource Audio.StartingIn}"
                                    FontSize="48"
                                    FontWeight="SemiBold"
                                    HorizontalAlignment="Center"
@@ -83,7 +122,7 @@
                                    FontWeight="Bold"
                                    HorizontalAlignment="Center"
                                    Foreground="#4CAF50"/>
-                        <Button Content="Cancel"
+                        <Button Content="{DynamicResource Text.Cancel}"
                                 Command="{Binding CancelCountdownCommand}"
                                 HorizontalAlignment="Center"
                                 FontSize="24"

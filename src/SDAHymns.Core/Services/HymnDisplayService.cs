@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using SDAHymns.Core.Data;
 using SDAHymns.Core.Data.Models;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace SDAHymns.Core.Services;
 
@@ -22,20 +24,63 @@ public class HymnDisplayService : IHymnDisplayService
 
     public async Task<Hymn?> GetHymnByNumberAsync(int hymnNumber, string categorySlug)
     {
-        return await _context.Hymns
+        var hymn = await _context.Hymns
+            .AsNoTracking()
             .Include(h => h.Category)
-            .Include(h => h.Verses.OrderBy(v => v.DisplayOrder))
+            .Include(h => h.Verses)
             .FirstOrDefaultAsync(h =>
                 h.Number == hymnNumber &&
                 h.Category.Slug == categorySlug);
+
+        if (hymn != null && hymn.Verses != null)
+        {
+            var versesList = hymn.Verses.OrderBy(v => v.DisplayOrder).ToList();
+            var titleVerse = new Verse
+            {
+                Id = -1,
+                HymnId = hymn.Id,
+                VerseNumber = 0,
+                Label = "Title",
+                Content = $"{hymn.Number}. {hymn.Title}",
+                DisplayOrder = -1,
+                IsInline = false,
+                IsContinuation = false
+            };
+            versesList.Insert(0, titleVerse);
+            hymn.Verses = versesList;
+        }
+
+        return hymn;
     }
 
     public async Task<List<Verse>> GetVersesForHymnAsync(int hymnId)
     {
-        return await _context.Verses
+        var verses = await _context.Verses
+            .AsNoTracking()
             .Where(v => v.HymnId == hymnId)
             .OrderBy(v => v.DisplayOrder)
             .ToListAsync();
+
+        var hymn = await _context.Hymns
+            .AsNoTracking()
+            .FirstOrDefaultAsync(h => h.Id == hymnId);
+        if (hymn != null)
+        {
+            var titleVerse = new Verse
+            {
+                Id = -1,
+                HymnId = hymn.Id,
+                VerseNumber = 0,
+                Label = "Title",
+                Content = $"{hymn.Number}. {hymn.Title}",
+                DisplayOrder = -1,
+                IsInline = false,
+                IsContinuation = false
+            };
+            verses.Insert(0, titleVerse);
+        }
+
+        return verses;
     }
 
     public async Task UpdateAudioRecordingAsync(AudioRecording audioRecording)

@@ -15,7 +15,7 @@ namespace SDAHymns.Core.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "10.0.1");
+            modelBuilder.HasAnnotation("ProductVersion", "10.0.7");
 
             modelBuilder.Entity("SDAHymns.Core.Data.Models.AppSetting", b =>
                 {
@@ -108,6 +108,13 @@ namespace SDAHymns.Core.Migrations
                     b.Property<float>("GlobalVolume")
                         .HasColumnType("REAL");
 
+                    b.Property<bool>("IsAspectRatio43")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Language")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("LastWindowPosition")
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
@@ -117,6 +124,10 @@ namespace SDAHymns.Core.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("RemoteWidgetSettingsJson")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Theme")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -137,6 +148,9 @@ namespace SDAHymns.Core.Migrations
                             AutoAdvanceEnabled = false,
                             CreatedAt = new DateTime(2025, 12, 3, 0, 0, 0, 0, DateTimeKind.Utc),
                             GlobalVolume = 0.8f,
+                            IsAspectRatio43 = true,
+                            Language = "ro",
+                            Theme = "Dark",
                             UpdatedAt = new DateTime(2025, 12, 3, 0, 0, 0, 0, DateTimeKind.Utc)
                         });
                 });
@@ -239,10 +253,17 @@ namespace SDAHymns.Core.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("CustomChorusColor")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("TEXT");
+
+                    b.Property<bool>("EnableCustomChorusStyling")
+                        .HasColumnType("INTEGER");
 
                     b.Property<bool>("EnableTextOutline")
                         .HasColumnType("INTEGER");
@@ -376,7 +397,9 @@ namespace SDAHymns.Core.Migrations
                             BackgroundImageOpacity = 0.29999999999999999,
                             BackgroundOpacity = 1.0,
                             CreatedAt = new DateTime(2025, 12, 3, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CustomChorusColor = "#FFD700",
                             Description = "Default black background with white text, left-aligned",
+                            EnableCustomChorusStyling = true,
                             EnableTextOutline = false,
                             EnableTextShadow = false,
                             FontFamily = "Inter",
@@ -418,7 +441,9 @@ namespace SDAHymns.Core.Migrations
                             BackgroundImageOpacity = 0.29999999999999999,
                             BackgroundOpacity = 1.0,
                             CreatedAt = new DateTime(2025, 12, 3, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CustomChorusColor = "#FFD700",
                             Description = "Pure black and white with bold text and shadow for maximum visibility",
+                            EnableCustomChorusStyling = true,
                             EnableTextOutline = false,
                             EnableTextShadow = true,
                             FontFamily = "Inter",
@@ -460,7 +485,9 @@ namespace SDAHymns.Core.Migrations
                             BackgroundImageOpacity = 0.29999999999999999,
                             BackgroundOpacity = 0.0,
                             CreatedAt = new DateTime(2025, 12, 3, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CustomChorusColor = "#FFD700",
                             Description = "Transparent background with text outline for streaming over video",
+                            EnableCustomChorusStyling = true,
                             EnableTextOutline = true,
                             EnableTextShadow = false,
                             FontFamily = "Inter",
@@ -502,7 +529,9 @@ namespace SDAHymns.Core.Migrations
                             BackgroundImageOpacity = 0.29999999999999999,
                             BackgroundOpacity = 1.0,
                             CreatedAt = new DateTime(2025, 12, 3, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CustomChorusColor = "#FFD700",
                             Description = "Dark blue background with yellow text for bright environments",
+                            EnableCustomChorusStyling = true,
                             EnableTextOutline = false,
                             EnableTextShadow = true,
                             FontFamily = "Inter",
@@ -544,7 +573,9 @@ namespace SDAHymns.Core.Migrations
                             BackgroundImageOpacity = 0.29999999999999999,
                             BackgroundOpacity = 1.0,
                             CreatedAt = new DateTime(2025, 12, 3, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CustomChorusColor = "#FFD700",
                             Description = "Clean and simple with minimal styling",
+                            EnableCustomChorusStyling = true,
                             EnableTextOutline = false,
                             EnableTextShadow = false,
                             FontFamily = "Inter",
@@ -586,7 +617,9 @@ namespace SDAHymns.Core.Migrations
                             BackgroundImageOpacity = 0.29999999999999999,
                             BackgroundOpacity = 1.0,
                             CreatedAt = new DateTime(2025, 12, 3, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CustomChorusColor = "#FFD700",
                             Description = "Classic church aesthetic with navy and gold colors",
+                            EnableCustomChorusStyling = true,
                             EnableTextOutline = false,
                             EnableTextShadow = false,
                             FontFamily = "Georgia",

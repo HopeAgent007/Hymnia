@@ -12,6 +12,7 @@ using SDAHymns.Core.Data;
 using SDAHymns.Core.Services;
 using SDAHymns.Desktop.ViewModels;
 using SDAHymns.Desktop.Views;
+using SDAHymns.Desktop.Services;
 using Velopack;
 
 namespace SDAHymns.Desktop;
@@ -27,9 +28,6 @@ public partial class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
-        // Velopack startup hook - MUST be called first
-        VelopackApp.Build().Run();
-
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             // Avoid duplicate validations from both Avalonia and the CommunityToolkit.
@@ -63,6 +61,10 @@ public partial class App : Application
             services.AddScoped<IAudioLibraryService, AudioLibraryService>();
             services.AddScoped<IAudioDownloadService, AudioDownloadService>();
             services.AddSingleton<HttpClient>();  // For AudioDownloadService
+            services.AddSingleton<BroadcastSyncService>();
+            services.AddSingleton<DesktopRemoteControlService>();
+            services.AddSingleton<IRemoteControlHandler>(sp => sp.GetRequiredService<DesktopRemoteControlService>());
+            services.AddSingleton<RemoteControlServer>();
 
             // ViewModels
             services.AddTransient<MainWindowViewModel>();
@@ -70,6 +72,28 @@ public partial class App : Application
             services.AddTransient<RemoteWidgetViewModel>();
 
             _serviceProvider = services.BuildServiceProvider();
+
+            // Initialize Localization BEFORE creating windows
+            var settingsService = _serviceProvider.GetRequiredService<ISettingsService>();
+            var lang = Task.Run(async () => await settingsService.GetLanguageAsync()).Result;
+            var culture = lang switch
+            {
+                "ro" => "ro-RO",
+                "en" => "en-US",
+                _ => lang
+            };
+            LocalizationManager.Instance.SetLanguage(culture);
+
+            // Start Remote Control Server
+            try
+            {
+                var remoteServer = _serviceProvider.GetRequiredService<RemoteControlServer>();
+                remoteServer.Start();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to start Remote Control Server: {ex.Message}");
+            }
 
             // Check launch mode - default to RemoteWidget
             var args = Environment.GetCommandLineArgs();
@@ -127,13 +151,9 @@ public partial class App : Application
                             {
                                 mainViewModel.ShowUpdateNotification(updateInfo);
                             }
-                            else if (mainWin is RemoteWidget && mainWin.DataContext is RemoteWidgetViewModel)
+                            else if (mainWin.DataContext is RemoteWidgetViewModel remoteViewModel)
                             {
-                                // For RemoteWidget, show a simple status message
-                                // (full update UI would be in MainWindow)
-                                // TODO: Add update notification to RemoteWidget status bar
-                                // For now, we'll just log it - user can see updates in advanced mode
-                                logger?.LogInformation("Update available: {Version}", updateInfo.TargetFullRelease.Version);
+                                remoteViewModel.ShowUpdateNotification(updateInfo);
                             }
                         });
                     }

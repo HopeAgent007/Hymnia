@@ -39,6 +39,9 @@ public class SettingsService : ISettingsService
                 AudioAutoPlayDelay = 5,
                 GlobalVolume = 0.8f,
                 AutoAdvanceEnabled = false,
+                Language = "ro-RO",
+                Theme = "Dark",
+                IsAspectRatio43 = true,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };
@@ -138,6 +141,45 @@ public class SettingsService : ISettingsService
         await UpdateAppSettingsAsync(settings);
     }
 
+    public async Task<string> GetLanguageAsync()
+    {
+        var settings = await GetAppSettingsAsync();
+        return settings.Language;
+    }
+
+    public async Task SetLanguageAsync(string language)
+    {
+        var settings = await GetAppSettingsAsync();
+        settings.Language = language;
+        await UpdateAppSettingsAsync(settings);
+    }
+
+    public async Task<string> GetThemeAsync()
+    {
+        var settings = await GetAppSettingsAsync();
+        return settings.Theme;
+    }
+
+    public async Task SetThemeAsync(string theme)
+    {
+        var settings = await GetAppSettingsAsync();
+        settings.Theme = theme;
+        await UpdateAppSettingsAsync(settings);
+    }
+
+    public async Task<bool> GetIsAspectRatio43Async()
+    {
+        var settings = await GetAppSettingsAsync();
+        return settings.IsAspectRatio43;
+    }
+
+    public async Task SetIsAspectRatio43Async(bool is43)
+    {
+        var settings = await GetAppSettingsAsync();
+        settings.IsAspectRatio43 = is43;
+        await UpdateAppSettingsAsync(settings);
+    }
+
     public async Task<string?> GetLastWindowPositionAsync()
     {
         var settings = await GetAppSettingsAsync();
@@ -168,20 +210,27 @@ public class SettingsService : ISettingsService
     {
         var appSettings = await _context.AppSettings.FindAsync(1);
 
-        if (appSettings?.RemoteWidgetSettingsJson == null)
+        if (appSettings == null || string.IsNullOrWhiteSpace(appSettings.RemoteWidgetSettingsJson))
         {
-            // Return default settings
             return new RemoteWidgetSettings();
         }
 
         try
         {
             var settings = JsonSerializer.Deserialize<RemoteWidgetSettings>(appSettings.RemoteWidgetSettingsJson);
-            return settings ?? new RemoteWidgetSettings();
+            if (settings == null) return new RemoteWidgetSettings();
+
+            // Ensure lists have enough items
+            if (settings.QuickSlots == null) settings.QuickSlots = new List<int> { 0, 0, 0, 0, 0, 0, 0, 0 };
+            while (settings.QuickSlots.Count < 8) settings.QuickSlots.Add(0);
+            
+            if (settings.QuickSlotLabels == null) settings.QuickSlotLabels = new List<string> { "", "", "", "", "", "", "", "" };
+            while (settings.QuickSlotLabels.Count < 8) settings.QuickSlotLabels.Add("");
+
+            return settings;
         }
         catch
         {
-            // If deserialization fails, return default
             return new RemoteWidgetSettings();
         }
     }
@@ -200,6 +249,9 @@ public class SettingsService : ISettingsService
                 AudioAutoPlayDelay = 5,
                 GlobalVolume = 0.8f,
                 AutoAdvanceEnabled = false,
+                Language = "ro-RO",
+                Theme = "Dark",
+                IsAspectRatio43 = true,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };

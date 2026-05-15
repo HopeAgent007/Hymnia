@@ -101,7 +101,7 @@ SDAHymns/
 │   └── legacy/                 # Legacy app (reference only)
 ├── docs/
 │   └── spec/                   # Specification files
-├── CLAUDE.md                   # Developer guidance for Claude Code
+├── ANTIGRAVITY.md              # Developer guidance for Antigravity
 ├── README.md                   # This file
 └── Directory.Build.props       # Common MSBuild properties
 ```
@@ -175,7 +175,7 @@ Contributions are welcome! This project aims for industry-standard testing cover
 
 ## Documentation
 
-- **[CLAUDE.md](CLAUDE.md)** - Comprehensive developer guide and architecture documentation
+- **[ANTIGRAVITY.md](ANTIGRAVITY.md)** - Comprehensive developer guide and architecture documentation
 - **[Spec Context](docs/spec/_context.md)** - Current project status and spec tracking
 - **[Spec 001](docs/spec/001-project-structure.md)** - Project structure specification
 
@@ -219,7 +219,7 @@ This project is licensed under the AGPL-3.0 License - see the [LICENSE](LICENSE)
 
 - Built for the Romanian Seventh Day Adventist Church
 - Successor to the legacy "Imnuri Crestine" application
-- Developed with [Claude Code](https://claude.ai/code)
+- Developed with Antigravity
 
 ## Contact & Support
 

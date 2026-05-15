@@ -4,6 +4,8 @@ using Avalonia.Input;
 using Avalonia.Media;
 using SDAHymns.Core.Data.Models;
 using SDAHymns.Desktop.ViewModels;
+using System;
+using System.Linq;
 
 namespace SDAHymns.Desktop.Views;
 
@@ -15,6 +17,37 @@ public partial class DisplayWindow : Window
 
         // Add keyboard shortcuts for presentation control (PowerPoint-style)
         KeyDown += DisplayWindow_KeyDown;
+    }
+
+    protected override void OnOpened(EventArgs e)
+    {
+        base.OnOpened(e);
+
+        // Automatically move to secondary screen if one is available
+        if (Screens.All.Count > 1)
+        {
+            var secondaryScreen = Screens.All.FirstOrDefault(s => !s.IsPrimary);
+            if (secondaryScreen != null)
+            {
+                // Check if we are already fullscreen
+                bool wasFullScreen = WindowState == WindowState.FullScreen;
+                
+                // We need to restore the window before moving it, otherwise the OS might resist
+                if (wasFullScreen)
+                {
+                    WindowState = WindowState.Normal;
+                }
+
+                // Move window to the secondary screen's top-left corner
+                Position = secondaryScreen.Bounds.Position;
+
+                // Restore fullscreen if it was set
+                if (wasFullScreen)
+                {
+                    WindowState = WindowState.FullScreen;
+                }
+            }
+        }
     }
 
     private void DisplayWindow_KeyDown(object? sender, KeyEventArgs e)
@@ -109,25 +142,38 @@ public partial class DisplayWindow : Window
             }
         }
 
-        // Apply to title
-        if (HymnTitleText != null)
-        {
-            HymnTitleText.FontFamily = new FontFamily(profile.FontFamily);
-            HymnTitleText.FontSize = profile.TitleFontSize;
-            HymnTitleText.Foreground = new SolidColorBrush(Color.Parse(profile.TitleColor));
-            HymnTitleText.FontWeight = ParseFontWeight(profile.FontWeight);
-            HymnTitleText.TextAlignment = ParseTextAlignment(profile.TextAlignment);
-            HymnTitleText.IsVisible = profile.ShowHymnTitle;
-        }
-
-        // Apply to verse label
-        if (VerseLabelText != null)
+        // Margins and alignment apply to the content panel
+        if (ContentPanel != null)
         {
             VerseLabelText.FontFamily = new FontFamily(profile.FontFamily);
             VerseLabelText.FontSize = profile.LabelFontSize;
-            VerseLabelText.Foreground = new SolidColorBrush(Color.Parse(profile.LabelColor));
-            VerseLabelText.FontWeight = ParseFontWeight(profile.FontWeight);
+            VerseLabelText.FontWeight = FontWeight.Bold; // Forced bold as requested
             VerseLabelText.IsVisible = profile.ShowVerseNumbers;
+            // Align the label's line height with the content so they vertically align
+            VerseLabelText.LineHeight = profile.LineHeight * profile.VerseFontSize;
+
+            if (this.FindControl<TextBlock>("ChorusLabelText") is TextBlock chorusLabel)
+            {
+                chorusLabel.FontFamily = new FontFamily(profile.FontFamily);
+                chorusLabel.FontSize = profile.LabelFontSize;
+                chorusLabel.FontWeight = FontWeight.Bold; // Forced bold as requested
+                chorusLabel.LineHeight = VerseLabelText.LineHeight;
+                chorusLabel.TextAlignment = ParseTextAlignment(profile.TextAlignment);
+                
+                if (chorusLabel.TextAlignment == TextAlignment.Center)
+                    chorusLabel.HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center;
+                else if (chorusLabel.TextAlignment == TextAlignment.Right)
+                    chorusLabel.HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Right;
+                else
+                    chorusLabel.HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Left;
+            }
+            
+            try 
+            {
+                // Only apply if not using the special gold color from VM
+                // Actually, VM color should probably take precedence if it's set to gold
+            }
+            catch { }
         }
 
         // Apply to verse content
@@ -135,18 +181,24 @@ public partial class DisplayWindow : Window
         {
             VerseContentText.FontFamily = new FontFamily(profile.FontFamily);
             VerseContentText.FontSize = profile.VerseFontSize;
-            VerseContentText.Foreground = new SolidColorBrush(Color.Parse(profile.TextColor));
-            VerseContentText.FontWeight = ParseFontWeight(profile.FontWeight);
+            VerseContentText.FontWeight = FontWeight.Bold; // Forced bold as requested
             VerseContentText.TextAlignment = ParseTextAlignment(profile.TextAlignment);
             VerseContentText.LineHeight = profile.LineHeight * profile.VerseFontSize;
-
-            // Apply text effects (shadow/outline)
-            if (profile.EnableTextShadow)
+            
+            try 
             {
-                // Note: Avalonia doesn't have DropShadowEffect like WPF
-                // Shadow would need to be implemented differently (e.g., using layered TextBlocks)
-                // For now, this is a placeholder
+                VerseContentText.Foreground = new SolidColorBrush(Color.Parse(profile.TextColor));
+                if (this.FindControl<TextBlock>("ChorusContentText") is TextBlock chorusContent)
+                {
+                    chorusContent.FontFamily = new FontFamily(profile.FontFamily);
+                    chorusContent.FontSize = profile.VerseFontSize;
+                    chorusContent.FontWeight = FontWeight.Bold; // Forced bold as requested
+                    chorusContent.Foreground = VerseContentText.Foreground;
+                    chorusContent.LineHeight = VerseContentText.LineHeight;
+                    chorusContent.TextAlignment = VerseContentText.TextAlignment;
+                }
             }
+            catch { VerseContentText.Foreground = Brushes.White; }
         }
 
         // Apply margins to content panel

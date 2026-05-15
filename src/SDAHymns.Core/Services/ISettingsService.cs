@@ -24,9 +24,17 @@ public interface ISettingsService
     Task<bool> GetAutoAdvanceEnabledAsync();
     Task SetAutoAdvanceEnabledAsync(bool enabled);
 
+    // General settings
+    Task<string> GetLanguageAsync();
+    Task SetLanguageAsync(string language);
+    Task<string> GetThemeAsync();
+    Task SetThemeAsync(string theme);
+
     // Display settings
     Task<int?> GetActiveDisplayProfileIdAsync();
     Task SetActiveDisplayProfileIdAsync(int? profileId);
+    Task<bool> GetIsAspectRatio43Async();
+    Task SetIsAspectRatio43Async(bool is43);
 
     // Window state
     Task<string?> GetLastWindowPositionAsync();
