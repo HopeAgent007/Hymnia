@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <Version>1.0.1-b</Version>
+    <Version>1.0.2-beta</Version>
     <Authors>Hymnia Contributors</Authors>
     <Company>Romanian Seventh Day Adventist Church</Company>
     <Product>Hymnia</Product>
